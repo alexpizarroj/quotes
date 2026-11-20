@@ -8,13 +8,13 @@ export const command = `curl -sf --max-time 10 "${URL}"`;
 // The quote changes once a day; check every 30 minutes so a late publish or a wake from sleep catches up.
 export const refreshFrequency = 30 * 60 * 1000;
 
-// Position and size: sits in the gap between the Calendar widget and the Weather/Stocks row.
+// Position and size: top-left corner of the desktop, as wide as a medium native widget.
 // `top` is measured from below the menu bar.
 export const className = `
-  top: 184px;
+  top: 10px;
   left: 10px;
   width: 345px;
-  height: 209px;
+  height: 240px;
   box-sizing: border-box;
   padding: 14px 18px;
   overflow: hidden;
@@ -29,9 +29,9 @@ export const className = `
   font-family: -apple-system, "SF Pro Text", sans-serif;
 
   .label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255, 255, 255, 0.55); margin-bottom: 8px; }
-  .line { font-family: "New York", "Iowan Old Style", Georgia, serif; font-size: 16px; line-height: 1.4; margin: 0 0 4px; }
-  .medium .line { font-size: 14px; line-height: 1.35; margin-bottom: 3px; }
-  .long .line { font-size: 12px; line-height: 1.3; margin-bottom: 2px; }
+  .line { font-family: "New York", "Iowan Old Style", Georgia, serif; font-size: 18px; line-height: 1.4; margin: 0 0 4px; }
+  .medium .line { font-size: 15.5px; line-height: 1.35; margin-bottom: 3px; }
+  .long .line { font-size: 13.5px; line-height: 1.32; margin-bottom: 2px; }
   .long .label { display: none; }
   .gap { height: 5px; }
   .by { margin-top: 10px; font-size: 12px; color: rgba(255, 255, 255, 0.6); }
