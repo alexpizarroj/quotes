@@ -22,9 +22,10 @@ export const className = `
   flex-direction: column;
   justify-content: center;
   border-radius: 22px;
-  /* No colour of its own: like the native widgets, the card is the wallpaper behind it, blurred and darkened by a fixed amount. */
-  background: rgba(0, 0, 0, 0.04);
-  -webkit-backdrop-filter: blur(30px) brightness(0.63) contrast(1.59);
+  /* Colour comes from the wallpaper: blurred, more saturated and darkened. The black layer guarantees
+     a dark card even where the backdrop filter has little effect. */
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(30px) saturate(180%) brightness(0.6);
   border: 0.5px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.95);
   font-family: -apple-system, "SF Pro Text", sans-serif;
