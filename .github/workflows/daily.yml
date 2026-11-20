@@ -7,6 +7,11 @@ on:
     branches: [main]
     paths: [quotes.md, scripts/**, .github/workflows/daily.yml]
   workflow_dispatch:
+    inputs:
+      reroll:
+        description: Pick a different quote for today
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -31,7 +36,7 @@ jobs:
         with:
           python-version: "3.15"
       - name: Pick today's quote
-        run: python scripts/pick.py
+        run: python scripts/pick.py ${{ inputs.reroll && '--reroll' || '' }}
       - name: Render the widget image
         run: sh scripts/render.sh
       - name: Save the pick to history

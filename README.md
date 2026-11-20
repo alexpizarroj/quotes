@@ -19,6 +19,16 @@ A personal collection of quotes, plus a daily job that picks one and publishes i
 
 Base URL: <https://alexpizarroj.github.io/quotes/>
 
+## Getting a different quote today
+
+Run the workflow by hand: on GitHub, open **Actions → Quote of the day → Run workflow** and leave "Pick a different quote for today" ticked. From a terminal:
+
+```bash
+gh workflow run daily.yml -R alexpizarroj/quotes
+```
+
+Each run replaces today's quote with one not yet shown today. The widgets pick it up on their next refresh: up to 30 minutes on the Mac, up to an hour on Android.
+
 ## Adding a quote
 
 Append a block to `quotes.md`, separated from the previous one by a `---` line:

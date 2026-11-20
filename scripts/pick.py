@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Pick the quote of the day and write the files the widgets read.
 
-Usage: pick.py [--date YYYY-MM-DD] [--check]
+Usage: pick.py [--date YYYY-MM-DD] [--reroll] [--check]
 
 Reads quotes.md and history.json, writes history.json and site/.
 The pick for a given date is made once and then reused, so re-running is safe.
+--reroll replaces it with a quote not yet shown that day.
 A quote is only repeated after every other quote has been shown.
 """
 import argparse
@@ -61,21 +62,32 @@ def shorten(text):
     return flat[:SHORT_LIMIT].rsplit(" ", 1)[0].rstrip(",.:;") + "…"
 
 
-def pick(quotes, history, date):
+def pick(quotes, history, date, reroll=False):
+    """Return today's quote and the ids skipped today by earlier rerolls."""
     by_id = {q["id"]: q for q in quotes}
-    for entry in history:
-        if entry["date"] == date and entry["id"] in by_id:
-            return by_id[entry["id"]]
-    last_shown = {e["id"]: e["date"] for e in history if e["date"] < date}
-    oldest = min(last_shown.get(q["id"], "") for q in quotes)
-    candidates = [q for q in quotes if last_shown.get(q["id"], "") == oldest]
-    return random.Random(date).choice(candidates)
+    entry = next((e for e in history if e["date"] == date), None)
+    skipped = list(entry.get("skipped", [])) if entry else []
+    if entry and entry["id"] in by_id:
+        if not reroll:
+            return by_id[entry["id"]], skipped
+        skipped.append(entry["id"])
+    # When each quote was last on screen; quotes skipped by a reroll count as shown that day.
+    last_shown = {}
+    for e in history:
+        if e["date"] < date:
+            for quote_id in [*e.get("skipped", []), e["id"]]:
+                last_shown[quote_id] = e["date"]
+    pool = [q for q in quotes if q["id"] not in skipped] or [q for q in quotes if q["id"] != skipped[-1]] or quotes
+    oldest = min(last_shown.get(q["id"], "") for q in pool)
+    candidates = [q for q in pool if last_shown.get(q["id"], "") == oldest]
+    return random.Random(f"{date}-{len(skipped)}").choice(candidates), skipped
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", default=datetime.datetime.now(TIMEZONE).date().isoformat())
     parser.add_argument("--check", action="store_true", help="only validate quotes.md")
+    parser.add_argument("--reroll", action="store_true", help="replace the date's quote with a different one")
     args = parser.parse_args()
 
     quotes, problems = parse((ROOT / "quotes.md").read_text())
@@ -89,9 +101,12 @@ def main():
 
     history_path = ROOT / "history.json"
     history = json.loads(history_path.read_text()) if history_path.exists() else []
-    today = pick(quotes, history, args.date)
+    today, skipped = pick(quotes, history, args.date, args.reroll)
     history = [e for e in history if e["date"] != args.date]
-    history.append({"date": args.date, "id": today["id"], "author": today["author"], "short": today["short"]})
+    entry = {"date": args.date, "id": today["id"], "author": today["author"], "short": today["short"]}
+    if skipped:
+        entry["skipped"] = skipped
+    history.append(entry)
     history.sort(key=lambda e: e["date"])
     history_path.write_text(json.dumps(history, indent=1, ensure_ascii=False) + "\n")
 
