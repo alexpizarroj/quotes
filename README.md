@@ -33,5 +33,9 @@ Spanish quotes get a `#es` tag. Check the file with `python3 scripts/pick.py --c
 
 ## Widgets
 
+| Mac (Übersicht) | Android (KWGT) |
+|---|---|
+| <img src="docs/mac-widget.png" alt="Quote of the day card above the native macOS desktop widgets" width="300"> | <img src="docs/android-widget.png" alt="Quote of the day card on an Android home screen" width="420"> |
+
 - **Mac:** [`widgets/mac/quote-of-the-day.jsx`](widgets/mac/quote-of-the-day.jsx), an Übersicht widget.
 - **Android:** [`widgets/android/README.md`](widgets/android/README.md), a KWGT widget.
