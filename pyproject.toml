@@ -1,0 +1,37 @@
+[project]
+name = "quotes"
+version = "0.1.0"
+description = "Personal quote collection with a daily pick published for home-screen widgets"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest", "pytest-cov", "ruff", "ty"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["scripts"]
+addopts = "--cov=pick --cov-branch --cov-report=term-missing --cov-fail-under=100"
+
+[tool.coverage.report]
+exclude_also = ['if __name__ == "__main__":']
+
+[tool.ruff]
+line-length = 100
+src = ["scripts", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "PTH", "PT", "RET", "ARG", "PL", "RUF", "S", "ANN"]
+ignore = [
+  "S324", # sha1 only names quotes; it is not used for security
+  "S311", # the picker's randomness is not cryptographic
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "ANN", "PLR2004"]
+
+[tool.ty.environment]
+extra-paths = ["scripts"]

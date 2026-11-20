@@ -41,6 +41,19 @@ Quote text, with line breaks as they should be displayed.
 
 Spanish quotes get a `#es` tag. Check the file with `python3 scripts/pick.py --check`.
 
+## Development
+
+The scripts need only Python's standard library to run. The checks use [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv run ruff check .          # lint
+uv run ruff format .         # format
+uv run ty check              # types
+uv run pytest                # tests, with 100% coverage required
+```
+
+The [Checks workflow](.github/workflows/checks.yml) runs all four on every push. The tests in [`tests/test_pick.py`](tests/test_pick.py) describe the picker's behaviour: what counts as a quote, which quote is chosen each day, how a reroll behaves and what gets published.
+
 ## Widgets
 
 | Mac (Übersicht) | Android (KWGT) |
