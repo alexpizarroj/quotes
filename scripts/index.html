@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quote of the day</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: Canvas; color: CanvasText; font-family: Georgia, serif; }
+  main { max-width: 34rem; padding: 2rem; }
+  p { font-size: 1.35rem; line-height: 1.5; margin: 0 0 .4rem; }
+  footer { margin-top: 1.2rem; font: 0.9rem system-ui, sans-serif; opacity: .65; }
+</style>
+<main><div id="text"></div><footer id="by"></footer></main>
+<script>
+  fetch("today.json", { cache: "no-store" }).then(r => r.json()).then(q => {
+    for (const line of q.paragraphs) {
+      const p = document.createElement("p");
+      p.textContent = line || " ";
+      document.getElementById("text").append(p);
+    }
+    document.getElementById("by").textContent = [q.author, q.source].filter(Boolean).join(", ");
+  });
+</script>
