@@ -12,9 +12,9 @@ export const refreshFrequency = 30 * 60 * 1000;
 // `top` is measured from below the menu bar.
 export const className = `
   top: 10px;
-  left: 10px;
+  left: 15px;
   width: 345px;
-  height: 240px;
+  height: 228px;
   box-sizing: border-box;
   padding: 14px 18px;
   overflow: hidden;
@@ -22,7 +22,7 @@ export const className = `
   flex-direction: column;
   justify-content: center;
   border-radius: 22px;
-  background: rgba(28, 32, 44, 0.55);
+  background: rgba(12, 18, 38, 0.62);
   -webkit-backdrop-filter: blur(30px) saturate(160%);
   border: 0.5px solid rgba(255, 255, 255, 0.18);
   color: rgba(255, 255, 255, 0.95);
