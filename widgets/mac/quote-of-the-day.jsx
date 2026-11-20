@@ -13,8 +13,8 @@ export const refreshFrequency = 30 * 60 * 1000;
 export const className = `
   top: 10px;
   left: 15px;
-  width: 345px;
-  height: 228px;
+  width: 346px;
+  height: 229.5px;
   box-sizing: border-box;
   padding: 14px 18px;
   overflow: hidden;
@@ -22,9 +22,9 @@ export const className = `
   flex-direction: column;
   justify-content: center;
   border-radius: 22px;
-  background: rgba(12, 18, 38, 0.62);
+  background: rgba(0, 4, 40, 0.68);
   -webkit-backdrop-filter: blur(30px) saturate(160%);
-  border: 0.5px solid rgba(255, 255, 255, 0.18);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.95);
   font-family: -apple-system, "SF Pro Text", sans-serif;
 
