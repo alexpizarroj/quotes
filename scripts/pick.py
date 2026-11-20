@@ -104,6 +104,8 @@ def main():
     (site / "quotes.json").write_text(dump(quotes))
     (site / "history.json").write_text(dump(history))
     (site / "index.html").write_text((ROOT / "scripts" / "index.html").read_text())
+    card = (ROOT / "scripts" / "card.html").read_text()
+    (site / "card.html").write_text(card.replace("__QUOTE__", json.dumps(payload).replace("</", "<\\/")))
     print(f"{args.date}: {today['short']} — {today['author']}")
 
 

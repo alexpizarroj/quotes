@@ -32,6 +32,8 @@ jobs:
           python-version: "3.12"
       - name: Pick today's quote
         run: python scripts/pick.py
+      - name: Render the widget image
+        run: sh scripts/render.sh
       - name: Save the pick to history
         run: |
           git config user.name "github-actions[bot]"

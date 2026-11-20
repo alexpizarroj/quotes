@@ -11,6 +11,7 @@ A personal collection of quotes, plus a daily job that picks one and publishes i
 | File | Contents |
 |---|---|
 | `today.json` | Today's quote: `text`, `short`, `paragraphs`, `author`, `source`, `tags`, `date` |
+| `widget.png` | Today's quote drawn as a card (1080×708, transparent corners), for image widgets |
 | `today.txt` | Today's quote as plain text |
 | `quotes.json` | Every quote |
 | `history.json` | Which quote was shown on which day |

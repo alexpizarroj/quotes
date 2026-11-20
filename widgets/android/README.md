@@ -1,19 +1,28 @@
 # Android home-screen widget (KWGT)
 
+The phone widget shows `widget.png`, an image of today's quote drawn with the same card design as the Mac widget. The workflow renders it once a day, so there is nothing to style on the phone.
+
 1. Install **KWGT Kustom Widget Maker** from the Play Store.
-2. Long-press the home screen, add a KWGT widget (4×2 or larger) and tap it to edit.
-3. Add a **Text** item and set its text to this formula:
+2. Long-press the home screen, add a KWGT widget and resize it to the full width of the screen and about two rows tall (4×2). Tap it to edit.
+3. Delete any items already in the widget.
+4. Add an **Image** item (the + button, then Image).
+5. In the item's **Bitmap** field, tick the checkbox on the right and tap the calculator icon to switch the field to a formula. Enter:
 
    ```
-   $wg("https://alexpizarroj.github.io/quotes/today.json", json, .text)$
+   https://alexpizarroj.github.io/quotes/widget.png?t=$df(yyyyMMddHH)$
    ```
 
-4. Add a second, smaller **Text** item for the author:
+   The `?t=` part changes every hour, which makes KWGT download the image again instead of keeping yesterday's.
+6. Increase the item's **Size** until the card fills the widget's width.
+7. Save with the disk icon.
 
-   ```
-   $wg("https://alexpizarroj.github.io/quotes/today.json", json, .author)$
-   ```
+## Text instead of an image
 
-5. For a small widget, use `.short` instead of `.text`: it is a one-line version of at most 110 characters.
+`today.json` has the same quote as text, if you would rather build the layout in KWGT:
 
-KWGT refreshes web content on its own schedule (Settings → Advanced → update mode), so the new quote can take a while to appear in the morning.
+```
+$wg("https://alexpizarroj.github.io/quotes/today.json", json, .text)$
+$wg("https://alexpizarroj.github.io/quotes/today.json", json, .author)$
+```
+
+`.short` is a one-line version of at most 110 characters.
