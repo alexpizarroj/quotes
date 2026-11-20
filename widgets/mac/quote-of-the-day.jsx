@@ -24,7 +24,8 @@ export const className = `
   border-radius: 22px;
   /* Colour comes from the wallpaper: blurred, more saturated and darkened. The black layer guarantees
      a dark card even where the backdrop filter has little effect. */
-  background: rgba(0, 0, 0, 0.5);
+  /* The dark layer is warm brown, tuned by eye to the current sunset wallpaper; use rgba(0, 0, 0, 0.5) for a neutral one. */
+  background: rgba(48, 22, 0, 0.55);
   -webkit-backdrop-filter: blur(30px) saturate(280%) brightness(0.6);
   border: 0.5px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.95);
