@@ -8,13 +8,19 @@ export const command = `curl -sf --max-time 10 "${URL}"`;
 // The quote changes once a day; check every 30 minutes so a late publish or a wake from sleep catches up.
 export const refreshFrequency = 30 * 60 * 1000;
 
-// Position and size: adjust `top`, `left` and `width` to sit next to your other widgets.
+// Position and size: sits in the gap between the Calendar widget and the Weather/Stocks row.
+// `top` is measured from below the menu bar.
 export const className = `
-  top: 40px;
-  left: 200px;
-  width: 330px;
+  top: 184px;
+  left: 10px;
+  width: 345px;
+  height: 209px;
   box-sizing: border-box;
-  padding: 16px 18px;
+  padding: 14px 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   border-radius: 22px;
   background: rgba(28, 32, 44, 0.55);
   -webkit-backdrop-filter: blur(30px) saturate(160%);
@@ -24,9 +30,12 @@ export const className = `
 
   .label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255, 255, 255, 0.55); margin-bottom: 8px; }
   .line { font-family: "New York", "Iowan Old Style", Georgia, serif; font-size: 16px; line-height: 1.4; margin: 0 0 4px; }
-  .line.long { font-size: 13.5px; }
-  .gap { height: 6px; }
+  .medium .line { font-size: 14px; line-height: 1.35; margin-bottom: 3px; }
+  .long .line { font-size: 12px; line-height: 1.3; margin-bottom: 2px; }
+  .long .label { display: none; }
+  .gap { height: 5px; }
   .by { margin-top: 10px; font-size: 12px; color: rgba(255, 255, 255, 0.6); }
+  .long .by { margin-top: 6px; }
 `;
 
 export const render = ({ output }) => {
@@ -36,12 +45,15 @@ export const render = ({ output }) => {
   } catch (e) {
     return <div className="by">Quote of the day is unavailable right now.</div>;
   }
-  const long = quote.text.length > 220 ? " long" : "";
+  // Shrink the text for longer quotes so every quote fits the fixed card.
+  const length = quote.text.length;
+  const lines = quote.paragraphs.length;
+  const size = length > 240 || lines >= 4 ? "long" : length > 150 || lines >= 2 ? "medium" : "";
   return (
-    <div>
+    <div className={size}>
       <div className="label">Quote of the day</div>
       {quote.paragraphs.map((line, i) =>
-        line ? <p key={i} className={"line" + long}>{line}</p> : <div key={i} className="gap" />
+        line ? <p key={i} className="line">{line}</p> : <div key={i} className="gap" />
       )}
       <div className="by">{[quote.author, quote.source].filter(Boolean).join(", ")}</div>
     </div>
