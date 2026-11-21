@@ -2,7 +2,7 @@ name: Quote of the day
 
 on:
   schedule:
-    - cron: "0 8 * * *" # 04:00 in Bolivia (UTC-4)
+    - cron: "17 8 * * *" # 04:17 in Bolivia (UTC-4); off the hour, when GitHub drops scheduled runs
   push:
     branches: [main]
     paths: [quotes.md, scripts/**, .github/workflows/daily.yml]
