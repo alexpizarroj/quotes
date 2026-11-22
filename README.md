@@ -52,13 +52,19 @@ uv run ty check              # types
 uv run pytest                # tests, with 100% coverage required
 ```
 
-The [Checks workflow](.github/workflows/checks.yml) runs all four on every push. The tests in [`tests/test_pick.py`](tests/test_pick.py) describe the picker's behaviour: what counts as a quote, which quote is chosen each day, how a reroll behaves and what gets published.
+The [Checks workflow](.github/workflows/checks.yml) runs all four on every push.
 
 ## Widgets
 
-| Mac (Übersicht) | Android (KWGT) |
+| Mac (ScriptWidget) | Android (KWGT) |
 |---|---|
-| <img src="docs/mac-widget.png" alt="Quote of the day card above the native macOS desktop widgets" width="300"> | <img src="docs/android-widget.png" alt="Quote of the day card on an Android home screen" width="420"> |
+| <img src="docs/mac-widget.png" alt="Quote of the day as a large macOS desktop widget, above the Weather, Stocks and Calendar widgets" width="300"> | <img src="docs/android-widget.png" alt="Quote of the day card on an Android home screen" width="420"> |
 
-- **Mac:** [`widgets/mac/quote-of-the-day.jsx`](widgets/mac/quote-of-the-day.jsx), an Übersicht widget.
+- **Mac:** [`widgets/scriptwidget/quote-of-the-day`](widgets/scriptwidget/quote-of-the-day), a native desktop widget for the [ScriptWidget](https://github.com/everettjf/ScriptWidget) app. It comes in small, medium, large and extra large, and picks the biggest text size that fits the quote. **Large** is the recommended size: most quotes fit comfortably, as in the screenshot. Set it up with one command; it needs macOS 26 or later, Homebrew and Python:
+
+  ```bash
+  python3 -c "$(curl -fsSL https://raw.githubusercontent.com/alexpizarroj/quotes/main/scripts/install_mac_widget.py)"
+  ```
+
+  Or, from a clone, `python3 scripts/install_mac_widget.py`. It installs the ScriptWidget command-line tool, opens the app's App Store page if the app is missing (install it, open it once and run the command again), then checks the widget and copies it into the app's iCloud library, so it also reaches your other Macs. Run it again after changing the widget to update it. Adding the widget to the desktop is the one step macOS can't automate; the script prints how. To preview changes to the widget, run `scriptwidget preview widgets/scriptwidget/quote-of-the-day`.
 - **Android:** [`widgets/android/README.md`](widgets/android/README.md), a KWGT widget.
