@@ -38,7 +38,7 @@ FINAL_STEPS = f"""\
 "{WIDGET_NAME}" is now in ScriptWidget's library. If the app was already open and doesn't list it,
 quit and reopen it. Then add the widget to the desktop:
   1. Right-click the desktop and choose "Edit Widgets…"
-  2. Search for ScriptWidget and drag a widget of the size you like onto the desktop
+  2. Search for ScriptWidget and drag the Large widget onto the desktop (it fits quotes best)
   3. Right-click the widget, choose "Edit Widget" and pick "{WIDGET_NAME}"
 """
 

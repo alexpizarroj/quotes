@@ -58,9 +58,9 @@ The [Checks workflow](.github/workflows/checks.yml) runs all four on every push.
 
 | Mac (ScriptWidget) | Android (KWGT) |
 |---|---|
-| <img src="docs/mac-widget.png" alt="Quote of the day as a medium macOS desktop widget" width="360"> | <img src="docs/android-widget.png" alt="Quote of the day card on an Android home screen" width="420"> |
+| <img src="docs/mac-widget.png" alt="Quote of the day as a large macOS desktop widget, above the Weather, Stocks and Calendar widgets" width="300"> | <img src="docs/android-widget.png" alt="Quote of the day card on an Android home screen" width="420"> |
 
-- **Mac:** [`widgets/scriptwidget/quote-of-the-day`](widgets/scriptwidget/quote-of-the-day), a native desktop widget for the free [ScriptWidget](https://github.com/everettjf/ScriptWidget) app. It comes in small, medium, large and extra large, and picks the biggest text size that fits the quote. Set it up with one command; it needs macOS 26 or later, Homebrew and Python:
+- **Mac:** [`widgets/scriptwidget/quote-of-the-day`](widgets/scriptwidget/quote-of-the-day), a native desktop widget for the [ScriptWidget](https://github.com/everettjf/ScriptWidget) app. It comes in small, medium, large and extra large, and picks the biggest text size that fits the quote. **Large** is the recommended size: most quotes fit comfortably, as in the screenshot. Set it up with one command; it needs macOS 26 or later, Homebrew and Python:
 
   ```bash
   python3 -c "$(curl -fsSL https://raw.githubusercontent.com/alexpizarroj/quotes/main/scripts/install_mac_widget.py)"
