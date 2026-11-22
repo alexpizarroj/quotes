@@ -13,21 +13,17 @@ on:
         type: boolean
         default: true
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
+permissions: {}
 
 concurrency:
   group: quote-of-the-day
   cancel-in-progress: false
 
 jobs:
-  publish:
+  pick:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -49,5 +45,18 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
+
+  # A separate job: deploy-pages can miss an artifact uploaded moments earlier
+  # in its own job (actions/deploy-pages#451).
+  deploy:
+    needs: pick
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
       - id: deploy
         uses: actions/deploy-pages@v5
