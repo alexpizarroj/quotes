@@ -1,0 +1,15 @@
+{
+  "formatVersion": 2,
+  "id": "io.github.alexpizarroj.quote-of-the-day",
+  "name": "Quote of the Day",
+  "version": "1.0.0",
+  "runtimeVersion": "1.0",
+  "minimumRuntimeVersion": "1.4",
+  "entry": "main.jsx",
+  "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge", "systemExtraLarge"],
+  "permissions": ["network"],
+  "networkDomains": ["alexpizarroj.github.io"],
+  "plugins": [],
+  "description": "Today's quote from alexpizarroj/quotes.",
+  "author": {"name": "Alex Pizarro", "url": "https://github.com/alexpizarroj/quotes"}
+}
