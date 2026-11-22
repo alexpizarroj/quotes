@@ -52,7 +52,7 @@ uv run ty check              # types
 uv run pytest                # tests, with 100% coverage required
 ```
 
-The [Checks workflow](.github/workflows/checks.yml) runs all four on every push. The tests in [`tests/test_pick.py`](tests/test_pick.py) describe the picker's behaviour: what counts as a quote, which quote is chosen each day, how a reroll behaves and what gets published. [`tests/test_install_mac_widget.py`](tests/test_install_mac_widget.py) covers the Mac widget installer.
+The [Checks workflow](.github/workflows/checks.yml) runs all four on every push.
 
 ## Widgets
 
