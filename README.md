@@ -5,7 +5,7 @@ A personal collection of quotes, plus a daily job that picks one and publishes i
 ## How it works
 
 - [`quotes.md`](quotes.md) is the collection. Add quotes by appending to it.
-- Every day at 04:17 Bolivia time, the [workflow](.github/workflows/daily.yml) runs [`scripts/pick.py`](scripts/pick.py). It picks one quote, records it in `history.json` and publishes it to GitHub Pages. No quote repeats until all the others have been shown.
+- Every hour, the [workflow](.github/workflows/daily.yml) runs [`scripts/pick.py`](scripts/pick.py). The first run of the day, Bolivia time, picks one quote, records it in `history.json` and publishes it to GitHub Pages; later runs reuse that pick. No quote repeats until all the others have been shown.
 - Widgets read the published files:
 
 | File | Contents |
