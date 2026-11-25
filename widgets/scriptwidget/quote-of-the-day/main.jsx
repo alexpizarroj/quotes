@@ -33,10 +33,21 @@ const DETAIL_FONT = {
     260, 887, 582, 610, 634, 633, 362, 444, 329, 582, 504, 773, 511, 504, 462, 315, 222, 315, 666,
   ],
 };
-// Curly quotes are this wide or narrower in both fonts. Any other character outside the tables
-// counts as a full em, which is at least its real width.
-const CURLY_QUOTES = "‘’“”";
-const CURLY_QUOTE_WIDTH = 474;
+// Punctuation outside the tables, at the wider of its widths in the two fonts.
+const PUNCTUATION_WIDTHS = {
+  "‘": 278,
+  "’": 278,
+  "“": 474,
+  "”": 474,
+  "—": 1000,
+  "–": 500,
+  "…": 1000,
+  "¡": 337,
+  "¿": 500,
+};
+// Any other character is drawn in a font this widget knows nothing about, so it counts as wider
+// than nearly every character there is.
+const UNKNOWN_WIDTH = 1200;
 
 // A dark, warm card that suits the sunset wallpaper.
 const BACKGROUND = "#2b1a0c";
@@ -54,20 +65,22 @@ const SIZES = {
   large: { width: 344, height: 344, largest: 20, comfortable: 17 },
   extraLarge: { width: 704, height: 344, largest: 24, comfortable: 20 },
 };
-// Joined text shrinks to this with the label, then loses the label and may go down to SMALLEST.
-const SMALL = 10;
+// Joined text shrinks to SMALLEST_WITH_LABEL, then loses the label and may go down to SMALLEST.
+const SMALLEST_WITH_LABEL = 10;
 const SMALLEST = 8;
 const SPACING = 6;
+// Lines are counted as if they were this share of their real width, to cover kerning and rounding.
+const WRAP_WIDTH = 0.98;
+// The author line may take up to this share of the card's height before it is cut short.
+const BYLINE_SHARE = 1 / 3;
 
-// macOS rounds a line's ascent and descent to whole points, on any display, so lines sit a
-// little further apart than the font's own 1.365 times its size.
-const lineHeight = (font, points) =>
-  Math.round(points * font.ascent) + Math.round(points * font.descent);
-// Lines are counted as if the card were this much narrower, to cover kerning and rounding.
-const WRAP_MARGIN = 0.98;
+// macOS rounds a line's ascent and descent to whole points, on any display, so the distance
+// between lines is not simply the font's own 1.365 times its size: 28 at 20pt, 13 at 10pt.
+const lineHeight = (face, points) =>
+  Math.round(points * face.ascent) + Math.round(points * face.descent);
 
-const family = String($getenv("widget-size") || "medium");
-const size = SIZES[family] || SIZES.medium;
+// A size this widget doesn't know is laid out as small, which fits inside every other card.
+const size = SIZES[String($getenv("widget-size"))] || SIZES.small;
 const textWidth = size.width - 2 * PADDING;
 const textHeight = size.height - 2 * PADDING;
 
@@ -75,25 +88,29 @@ const textHeight = size.height - 2 * PADDING;
 const labelSize = (points) => Math.max(9, Math.round(points * 0.6));
 const bylineSize = (points) => Math.max(10, Math.round(points * 0.72));
 
-function charWidth(char, font) {
-  if (CURLY_QUOTES.includes(char)) return CURLY_QUOTE_WIDTH;
+// How wide a character is, in thousandths of the font size.
+function charWidth(char, face) {
+  if (PUNCTUATION_WIDTHS[char]) return PUNCTUATION_WIDTHS[char];
   // An accented letter is as wide as the letter under the accent.
   const code = char.normalize("NFD").charCodeAt(0);
-  return font.widths[code - 32] || 1000;
+  return face.widths[code - 32] || UNKNOWN_WIDTH;
 }
 
-// Counts the lines a text wraps to, breaking between words the way macOS does.
-function countLines(text, font, points) {
-  const limit = (textWidth * WRAP_MARGIN * 1000) / points;
-  const space = font.widths[0];
+// Counts the lines a text wraps to. Lines break at spaces only; macOS also breaks after a hyphen,
+// so the real text can take fewer lines than this, never more.
+function countLines(text, face, points) {
+  const limit = (textWidth * WRAP_WIDTH * 1000) / points;
+  const space = face.widths[0];
   let lines = 1;
   let used = 0;
   for (const word of text.split(" ")) {
-    const width = Array.from(word).reduce((total, char) => total + charWidth(char, font), 0);
+    const width = Array.from(word).reduce((total, char) => total + charWidth(char, face), 0);
     if (width > limit) {
       // A word too long for a line breaks wherever it has to, and again at each hyphen. This
-      // assumes the worst: it starts on a new line and leaves no room after it.
-      lines += (used > 0 ? 1 : 0) + Math.ceil(width / limit) - 1 + word.split("-").length - 1;
+      // assumes the worst: it starts on a new line, each of its lines ends a character short of
+      // full, and it leaves no room after it.
+      const perLine = Math.max(limit - UNKNOWN_WIDTH, UNKNOWN_WIDTH);
+      lines += (used > 0 ? 1 : 0) + Math.ceil(width / perLine) - 1 + word.split("-").length - 1;
       used = limit;
     } else if (used > 0 && used + space + width > limit) {
       lines += 1;
@@ -105,16 +122,21 @@ function countLines(text, font, points) {
   return lines;
 }
 
+const bylineHeight = (byline, points) =>
+  countLines(byline, DETAIL_FONT, bylineSize(points)) * lineHeight(DETAIL_FONT, bylineSize(points));
+
 // How tall the whole card's content is with the quote set as these blocks at a size.
 function contentHeight(blocks, byline, points, withLabel) {
-  const quoteLines = blocks.reduce((total, block) => total + countLines(block, QUOTE_FONT, points), 0);
-  const bylineLines = countLines(byline, DETAIL_FONT, bylineSize(points));
+  const quoteLines = blocks.reduce(
+    (total, block) => total + countLines(block, QUOTE_FONT, points),
+    0
+  );
   return (
     (withLabel ? lineHeight(DETAIL_FONT, labelSize(points)) + SPACING : 0) +
     quoteLines * lineHeight(QUOTE_FONT, points) +
     (blocks.length - 1) * SPACING +
     SPACING +
-    bylineLines * lineHeight(DETAIL_FONT, bylineSize(points))
+    bylineHeight(byline, points)
   );
 }
 
@@ -122,32 +144,50 @@ function contentHeight(blocks, byline, points, withLabel) {
 function biggestFit(blocks, byline, floor, withLabel) {
   for (let points = size.largest; points >= floor; points--) {
     if (contentHeight(blocks, byline, points, withLabel) <= textHeight) {
-      return { blocks, points, withLabel };
+      return { blocks, byline, points, withLabel };
     }
   }
   return null;
 }
 
+// Drops words from the end of a text, closing it with "…", until it passes a test. It stops at
+// the first word, so a single word too big for the card is the one thing that can still be cut
+// off by the card's edge.
+function shorten(text, fits) {
+  const words = text.split(" ");
+  let cut = text;
+  while (!fits(cut) && words.length > 1) {
+    words.pop();
+    cut = words.join(" ").replace(/[\s.,;:!?—–-]+$/, "") + "…";
+  }
+  return cut;
+}
+
 // Keeps the paragraphs apart while the text stays comfortably big. Otherwise joins them into one
 // block and takes the biggest size that fits, giving up the label before any of the quote. A quote
-// too long even for that loses its last words, so that the cut is clean and the author stays.
-function layout(paragraphs, byline) {
-  const joined = [paragraphs.join(" ")];
+// too long even for that loses its last words, and so does an author line that would crowd out
+// the quote, so that every cut is a clean one.
+function layout(paragraphs, fullByline) {
+  const byline = shorten(
+    fullByline,
+    (cut) => bylineHeight(cut, SMALLEST) <= textHeight * BYLINE_SHARE
+  );
+  const joined = paragraphs.join(" ");
   const fit =
     biggestFit(paragraphs, byline, size.comfortable, true) ||
-    biggestFit(joined, byline, SMALL, true) ||
-    biggestFit(joined, byline, SMALLEST, false);
+    biggestFit([joined], byline, SMALLEST_WITH_LABEL, true) ||
+    biggestFit([joined], byline, SMALLEST, false);
   if (fit) return fit;
-  const words = joined[0].split(" ");
-  while (words.length > 1) {
-    words.pop();
-    const cut = [words.join(" ") + "…"];
-    if (contentHeight(cut, byline, SMALLEST, false) <= textHeight) {
-      return { blocks: cut, points: SMALLEST, withLabel: false };
-    }
-  }
-  return { blocks: joined, points: SMALLEST, withLabel: false };
+  const cut = shorten(
+    joined,
+    (text) => contentHeight([text], byline, SMALLEST, false) <= textHeight
+  );
+  return { blocks: [cut], byline, points: SMALLEST, withLabel: false };
 }
+
+// Text arrives as it was typed: a line break inside a paragraph starts a new block, and other
+// runs of white space become single spaces, which is what the line counting expects.
+const tidy = (text) => String(text).replace(/\s+/g, " ").trim();
 
 const font = (face, points) => `custom,${face.name},${points}`;
 
@@ -165,10 +205,23 @@ if (!quote || !Array.isArray(quote.paragraphs)) {
     </vstack>
   );
 } else {
-  const byline = "— " + quote.author + (quote.source ? ", " + quote.source : "");
-  const { blocks, points, withLabel } = layout(quote.paragraphs.filter((line) => line), byline);
+  const paragraphs = quote.paragraphs
+    .flatMap((paragraph) => String(paragraph).split("\n"))
+    .map(tidy)
+    .filter((line) => line);
+  const { blocks, byline, points, withLabel } = layout(
+    paragraphs,
+    tidy("— " + quote.author + (quote.source ? ", " + quote.source : ""))
+  );
   $render(
-    <vstack frame="max" padding={String(PADDING)} spacing={String(SPACING)} background={BACKGROUND} alignment="leading" linkurl={PAGE}>
+    <vstack
+      frame="max"
+      padding={String(PADDING)}
+      spacing={String(SPACING)}
+      background={BACKGROUND}
+      alignment="leading"
+      linkurl={PAGE}
+    >
       {withLabel ? (
         <text font={font(DETAIL_FONT, labelSize(points))} color={MUTED}>QUOTE OF THE DAY</text>
       ) : null}
