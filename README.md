@@ -5,7 +5,7 @@ A personal collection of quotes, plus a daily job that picks one and publishes i
 ## How it works
 
 - [`quotes.md`](quotes.md) is the collection. Add quotes by appending to it.
-- Every hour, the [workflow](.github/workflows/daily.yml) runs [`scripts/pick.py`](scripts/pick.py). The first run of the day, Bolivia time, picks one quote, records it in `history.json` and publishes it to GitHub Pages; later runs reuse that pick. No quote repeats until all the others have been shown.
+- Every day at 04:17 Bolivia time, the [workflow](.github/workflows/daily.yml) runs [`scripts/pick.py`](scripts/pick.py). The first run of the day, Bolivia time, picks one quote, records it in `history.json` and publishes it to GitHub Pages; later runs reuse that pick. No quote repeats until all the others have been shown.
 - Widgets read the published files:
 
 | File | Contents |
@@ -28,6 +28,43 @@ gh workflow run daily.yml -R alexpizarroj/quotes
 ```
 
 Each run replaces today's quote with one not yet shown today. The widgets pick it up on their next refresh: up to 30 minutes on the Mac, up to an hour on Android.
+
+## Daily trigger
+
+The workflow has no GitHub schedule: an hourly cron ran only about three times a day, at random hours. Instead, a systemd user timer on an always-on Linux machine dispatches it with `reroll=false`, so a second run the same day reuses the pick. Linger must be on (`loginctl enable-linger`) and `gh` logged in.
+
+`~/.config/systemd/user/quote-of-the-day.service`:
+
+```ini
+[Unit]
+Description=Dispatch the quote-of-the-day workflow on alexpizarroj/quotes
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=2h
+StartLimitBurst=12
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/gh workflow run daily.yml -R alexpizarroj/quotes -f reroll=false
+Restart=on-failure
+RestartSec=5min
+```
+
+`~/.config/systemd/user/quote-of-the-day.timer`:
+
+```ini
+[Unit]
+Description=Pick the quote of the day at 04:17, Bolivia time
+
+[Timer]
+OnCalendar=*-*-* 04:17:00 America/La_Paz
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+Enable it with `systemctl --user enable --now quote-of-the-day.timer`; check it with `systemctl --user list-timers quote-of-the-day.timer` and `journalctl --user -u quote-of-the-day`.
 
 ## Adding a quote
 
