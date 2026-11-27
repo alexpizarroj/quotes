@@ -1,10 +1,8 @@
 name: Quote of the day
 
+# No schedule: GitHub ran an hourly cron only about three times a day, so the
+# daily run is dispatched from outside (see "Daily trigger" in the README).
 on:
-  schedule:
-    # Hourly as an experiment: GitHub ran the single daily slot 8 to 12 hours late.
-    # Extra runs are harmless, because the day's pick is made once and then reused.
-    - cron: "17 * * * *"
   push:
     branches: [main]
     paths: [quotes.md, scripts/**, .github/workflows/daily.yml]
